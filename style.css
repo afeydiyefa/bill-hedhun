@@ -1,0 +1,13 @@
+.text-theme { color: var(--theme-color); }
+.bg-theme { background-color: var(--theme-color); }
+.theme-table th, .theme-table td { border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+.theme-table tbody tr:nth-child(even) { background-color: var(--theme-stripe); }
+
+textarea, input { width: 100%; border: 1px solid #e5e7eb; border-radius: 4px; padding: 6px 8px; outline: none; font-size: 0.95rem; resize: none; }
+.account-box { font-size: 0.9rem; width: 20rem; }
+.fixed-account { position: relative; bottom: 0; left: 0; }
+
+/* Themes */
+.theme-modern { --theme-color:#0d9488; --theme-stripe:#f0fdfa; --theme-font:'Arial'; background-color:#ffffff; }
+.theme-classic { --theme-color:#2563eb; --theme-stripe:#e0ebff; --theme-font:'Verdana'; background-color:#f0f4ff; }
+.theme-gray { --theme-color:#4b5563;
