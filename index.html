@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="UTF-8">
-    <title>Bill app </title>
+    <title>Bill -Hedhun updated</title>
     <link rel="stylesheet" href="./style.css">
 
   </head>
@@ -20,6 +20,7 @@
 </head>
 <body class="bg-gray-100 font-sans">
 
+<!-- Controls Section -->
 <div id="controls" class="max-w-6xl mx-auto mt-8 p-6 bg-white shadow rounded-md relative">
 
   <button id="downloadPDF" class="absolute left-6 top-6 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md">
@@ -27,15 +28,18 @@
   </button>
 
   <div class="absolute right-6 top-6">
-    <h1 class="text-2xl font-bold text-teal-600">ބިލް ހެދުން</h1>
+    <h1 id="invoiceTitle" class="text-2xl font-bold text-teal-600">ބިލް ހެދުން</h1>
   </div>
 
-  <div class="mt-16 flex justify-between items-center gap-4">
-    <div></div>
+  <div class="mt-16 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <label class="text-sm text-gray-700">Upload Logo:</label>
+      <input type="file" id="logoUpload" accept="image/*" class="border rounded-md p-1 text-sm mt-1">
+    </div>
     <div class="flex items-center gap-3">
       <label for="themeSelector" class="text-sm text-gray-700">Theme:</label>
       <select id="themeSelector" class="border rounded-md p-2 text-sm">
-        <option value="modern">Modern Teal</option>
+        <option value="teal">Teal</option>
         <option value="classic">Classic Blue</option>
         <option value="gray">Elegant Gray</option>
         <option value="purple">Soft Purple</option>
@@ -64,7 +68,7 @@ Email / Phone</textarea>
   </div>
 
   <!-- Account Details -->
-  <div class="mt-6 border rounded-md p-4 bg-gray-50 w-80 account-box text-sm fixed-account">
+  <div class="mt-6 border rounded-md p-4 bg-gray-50 w-full md:w-80 text-sm">
     <h2 class="font-semibold text-gray-700 mb-2">Account Details</h2>
     <div class="grid gap-2">
       <input id="accountName" placeholder="Account Name" class="border rounded-md p-2 text-sm" value="Your Account Name">
@@ -76,18 +80,18 @@ Email / Phone</textarea>
   <div class="mt-8">
     <h2 class="font-semibold text-gray-700 mb-2">Invoice Items</h2>
     <table class="w-full text-left border border-gray-300 theme-table">
-      <thead class="bg-teal-600 text-white">
+      <thead id="itemsHeader" class="bg-teal-600 text-white">
         <tr>
-          <th class="p-2 w-2/3">Description</th>
-          <th class="p-2 text-right">Qty</th>
-          <th class="p-2 text-right">Rate</th>
-          <th class="p-2 text-right">Amount</th>
+          <th class="p-2 w-1/2">Description</th>
+          <th class="p-2 text-right w-1/6">Qty</th>
+          <th class="p-2 text-right w-1/6">Rate</th>
+          <th class="p-2 text-right w-1/6">Amount</th>
           <th class="p-2"></th>
         </tr>
       </thead>
       <tbody id="invoiceItems"></tbody>
     </table>
-    <button id="addItem" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-md">+ Add Item</button>
+    <button id="addItem" class="mt-3 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md">+ Add Item</button>
   </div>
 
   <!-- Totals -->
@@ -103,54 +107,8 @@ Email / Phone</textarea>
   </div>
 </div>
 
-<!-- Invoice Preview -->
-<div id="invoice" class="max-w-7xl mx-auto my-10 p-10 bg-white shadow rounded-md transition-all duration-300 theme-modern">
-  <div class="invoice-header flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-theme">INVOICE</h1>
-    <div class="text-right">
-      <div class="font-semibold text-gray-700">Date: <span id="invoiceDate"></span></div>
-      <div class="font-semibold text-gray-700">Invoice No: <span id="previewInvoiceNumber"></span></div>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-2 gap-6 mb-8">
-    <div>
-      <h3 class="font-semibold text-gray-700 mb-1">From:</h3>
-      <p id="previewCompanyInfo" class="whitespace-pre-line text-sm"></p>
-    </div>
-    <div>
-      <h3 class="font-semibold text-gray-700 mb-1">Bill To:</h3>
-      <p id="previewClientInfo" class="whitespace-pre-line text-sm"></p>
-    </div>
-  </div>
-
-  <table class="w-full border border-gray-300 text-sm mb-6 theme-table" id="previewTable">
-    <thead>
-      <tr>
-        <th class="p-2 text-left w-2/3">Description</th>
-        <th class="p-2 text-right">Qty</th>
-        <th class="p-2 text-right">Rate</th>
-        <th class="p-2 text-right">Amount</th>
-      </tr>
-    </thead>
-    <tbody id="previewItems"></tbody>
-  </table>
-
-  <div class="flex justify-end w-56 ml-auto mb-6">
-    <div class="text-right w-full">
-      <div class="flex justify-between mb-1"><span>Subtotal:</span><span id="previewSubtotal">MVR 0.00</span></div>
-      <div class="flex justify-between mb-1"><span>Tax:</span><span id="previewTax">MVR 0.00</span></div>
-      <div class="border-t mt-2 pt-2 font-bold flex justify-between text-lg"><span>Total:</span><span id="previewTotal">MVR 0.00</span></div>
-    </div>
-  </div>
-
-  <div id="accountBox" class="border rounded-md p-3 bg-gray-50 w-72 text-sm mt-4">
-    <h3 class="font-semibold text-gray-700 mb-1">Account Details:</h3>
-    <p><span id="previewAccountName"></span></p>
-    <p>Account Number: <span id="previewAccountNumber"></span></p>
-  </div>
-
-  <div class="mt-8 text-center text-gray-500 text-xs">Thank you for your business!</div>
+<!-- Invoice Preview Section -->
+<div id="invoice" class="max-w-7xl mx-auto my-10 p-10 bg-white shadow rounded-md transition-all duration-300 theme-teal">
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>

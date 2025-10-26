@@ -1,169 +1,152 @@
-// Elements
-const themeSelector = document.getElementById('themeSelector');
 const invoiceEl = document.getElementById('invoice');
-const invoiceItemsTbody = document.getElementById('invoiceItems');
-const addItemBtn = document.getElementById('addItem');
-
+const invoiceNumberEl = document.getElementById('invoiceNumber');
 const companyInfoEl = document.getElementById('companyInfo');
 const clientInfoEl = document.getElementById('clientInfo');
 const accountNameEl = document.getElementById('accountName');
 const accountNumberEl = document.getElementById('accountNumber');
-const invoiceNumberEl = document.getElementById('invoiceNumber');
-const taxRateEl = document.getElementById('taxRate');
-const subtotalEl = document.getElementById('subtotal');
-const totalEl = document.getElementById('total');
-
-const previewCompanyInfo = document.getElementById('previewCompanyInfo');
-const previewClientInfo = document.getElementById('previewClientInfo');
-const previewAccountName = document.getElementById('previewAccountName');
-const previewAccountNumber = document.getElementById('previewAccountNumber');
-const previewInvoiceNumber = document.getElementById('previewInvoiceNumber');
-const previewItemsTbody = document.getElementById('previewItems');
-const previewSubtotal = document.getElementById('previewSubtotal');
-const previewTax = document.getElementById('previewTax');
-const previewTotal = document.getElementById('previewTotal');
-
+const addItemBtn = document.getElementById('addItem');
 const downloadBtn = document.getElementById('downloadPDF');
-const invoiceDateEl = document.getElementById('invoiceDate');
-const previewTable = document.getElementById('previewTable');
+const themeSelector = document.getElementById('themeSelector');
+const logoUploadEl = document.getElementById('logoUpload');
 
-// Set today's date DD/MM/YYYY
-const now = new Date();
-invoiceDateEl.textContent = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
-
-// Invoice items array
-let items = [{description:'', qty:'', rate:''}];
-
-// Theme colors
+let items = [];
+let logoDataURL = "";
 const themeColors = {
-  modern: '#0d9488',
-  classic: '#2563eb',
-  gray: '#4b5563',
-  purple: '#7c3aed',
-  gold: '#d4af37',
-  green: '#10b981'
+  teal: '#0d9488',
+  classic: '#1e3a8a',
+  gray: '#374151',
+  purple: '#8b5cf6',
+  gold: '#d97706',
+  green: '#16a34a'
 };
 
-// Helper functions
-const toNum = v => isFinite(parseFloat(v)) ? parseFloat(v) : 0;
-const money = n => n.toFixed(2);
+// Upload logo
+logoUploadEl.addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(event){ 
+      logoDataURL = event.target.result; 
+      updateInvoice(); 
+    }
+    reader.readAsDataURL(file);
+  }
+});
 
-// Render invoice items table
 function renderTable(){
-  invoiceItemsTbody.innerHTML = '';
-  items.forEach((it,i)=>{
+  const tbody = document.getElementById('invoiceItems');
+  tbody.innerHTML = '';
+  items.forEach((item, idx)=>{
     const tr = document.createElement('tr');
     tr.innerHTML = `
-<td class="p-2 w-2/3"><textarea data-index="${i}" data-field="description">${it.description}</textarea></td>
-<td class="p-2 text-right"><input type="number" data-index="${i}" data-field="qty" value="${it.qty}"></td>
-<td class="p-2 text-right"><input type="number" data-index="${i}" data-field="rate" value="${it.rate}"></td>
-<td class="p-2 text-right" id="amount-${i}">0.00</td>
-<td class="p-2 text-center"><button data-action="remove" data-index="${i}" class="text-red-600">✕</button></td>
-`;
-    invoiceItemsTbody.appendChild(tr);
+      <td class="border p-2 w-1/2"><input data-index="${idx}" data-field="description" value="${item.description}" class="w-full border rounded p-1 text-sm"></td>
+      <td class="border p-2 text-right w-1/6"><input data-index="${idx}" data-field="qty" type="number" value="${item.qty}" class="w-full border rounded p-1 text-sm text-right"></td>
+      <td class="border p-2 text-right w-1/6"><input data-index="${idx}" data-field="rate" type="number" value="${item.rate}" class="w-full border rounded p-1 text-sm text-right"></td>
+      <td class="border p-2 text-right w-1/6 amount-cell">${(item.qty*item.rate||0).toFixed(2)}</td>
+      <td class="border p-2 text-center"><button data-action="remove" data-index="${idx}" class="text-red-500">x</button></td>
+    `;
+    tbody.appendChild(tr);
   });
-}
-
-// Update invoice preview and calculations
-function updateInvoice(){
-  let subtotal = 0;
-  previewItemsTbody.innerHTML = '';
-
-  items.forEach((it,i)=>{
-    const qty = toNum(it.qty);
-    const rate = toNum(it.rate);
-    const amt = qty * rate;
-    subtotal += amt;
-
-    const amountCell = document.getElementById(`amount-${i}`);
-    if(amountCell) amountCell.textContent = money(amt);
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-<td class="p-2">${it.description}</td>
-<td class="p-2 text-right">${qty}</td>
-<td class="p-2 text-right">${money(rate)}</td>
-<td class="p-2 text-right">${money(amt)}</td>`;
-    previewItemsTbody.appendChild(tr);
-  });
-
-  const tax = subtotal * toNum(taxRateEl.value) / 100;
-  const total = subtotal + tax;
-
-  subtotalEl.textContent = `MVR ${money(subtotal)}`;
-  totalEl.textContent = `MVR ${money(total)}`;
-  previewSubtotal.textContent = `MVR ${money(subtotal)}`;
-  previewTax.textContent = `MVR ${money(tax)}`;
-  previewTotal.textContent = `MVR ${money(total)}`;
-
-  previewCompanyInfo.textContent = companyInfoEl.value;
-  previewClientInfo.textContent = clientInfoEl.value;
-  previewAccountName.textContent = accountNameEl.value;
-  previewAccountNumber.textContent = accountNumberEl.value;
-  previewInvoiceNumber.textContent = invoiceNumberEl.value;
-}
-
-// Add new invoice item
-addItemBtn.addEventListener('click', ()=>{
-  items.push({description:'', qty:'', rate:''});
-  renderTable();
   updateInvoice();
-});
+}
 
-// Handle input changes in table and fields
-document.addEventListener('input', e=>{
-  const target = e.target;
-  if(target.dataset.index && target.dataset.field){
-    const idx = Number(target.dataset.index);
-    const field = target.dataset.field;
-    items[idx][field] = target.value;
-    updateInvoice();
-  }
-  if(['companyInfo','clientInfo','accountName','accountNumber','invoiceNumber','taxRate'].includes(target.id)){
-    updateInvoice();
-  }
-});
+function updateInvoice(){
+  const subtotal = calculateSubtotal();
+  const tax = calculateTax();
+  const total = calculateTotal();
+  const theme = themeSelector.value;
 
-// Remove item
-document.addEventListener('click', e=>{
-  const target = e.target;
-  if(target.dataset.action==='remove'){
-    const idx = Number(target.dataset.index);
-    items.splice(idx,1);
-    renderTable();
-    updateInvoice();
-  }
-});
+  invoiceEl.className = `max-w-7xl mx-auto my-10 p-10 bg-white shadow rounded-md transition-all duration-300 theme-${theme}`;
+  
+  invoiceEl.innerHTML = `
+    <div class="invoice-header">
+      <div>
+        ${logoDataURL ? `<img src="${logoDataURL}" class="invoice-logo">` : ''}
+        <h1 class="invoice-title text-theme">INVOICE</h1>
+      </div>
+      <div class="text-right">
+        <div class="font-semibold text-gray-700">Date: ${new Date().toLocaleDateString()}</div>
+        <div class="font-semibold text-gray-700">Invoice No: ${invoiceNumberEl.value}</div>
+      </div>
+    </div>
 
-// Theme switching
-themeSelector.addEventListener('change', e=>{
-  const theme = e.target.value;
-  invoiceEl.className = 'max-w-7xl mx-auto my-10 p-10 bg-white shadow rounded-md transition-all duration-300 theme-' + theme;
+    <div class="grid grid-cols-2 gap-6 mb-8 mt-6">
+      <div>
+        <h3 class="font-semibold text-gray-700 mb-1">From:</h3>
+        <p class="whitespace-pre-line text-sm">${companyInfoEl.value}</p>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-700 mb-1">Bill To:</h3>
+        <p class="whitespace-pre-line text-sm">${clientInfoEl.value}</p>
+      </div>
+    </div>
 
-  // Update table header color in preview
-  const tableHeads = previewTable.querySelectorAll('thead');
-  tableHeads.forEach(th => {
-    th.style.backgroundColor = themeColors[theme];
-    th.style.color = '#fff';
-  });
+    <table class="w-full border border-gray-300 text-sm mb-6 theme-table">
+      <thead>
+        <tr>
+          <th class="p-2 text-left w-1/2">Description</th>
+          <th class="p-2 text-right w-1/6">Qty</th>
+          <th class="p-2 text-right w-1/6">Rate</th>
+          <th class="p-2 text-right w-1/6">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map(i=>`<tr>
+          <td class="border p-2">${i.description}</td>
+          <td class="border p-2 text-right">${i.qty}</td>
+          <td class="border p-2 text-right">${i.rate}</td>
+          <td class="border p-2 text-right">${(i.qty*i.rate||0).toFixed(2)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
 
-  // Update invoice title color
+    <div class="flex justify-end w-56 ml-auto mb-6 totals p-2 rounded">
+      <div class="text-right w-full">
+        <div class="flex justify-between mb-1"><span>Subtotal:</span><span>${subtotal.toFixed(2)}</span></div>
+        <div class="flex justify-between mb-1"><span>Tax:</span><span>${tax.toFixed(2)}</span></div>
+        <div class="border-t mt-2 pt-2 font-bold flex justify-between text-lg"><span>Total:</span><span>${total.toFixed(2)}</span></div>
+      </div>
+    </div>
+
+    <div class="border rounded-md p-3 bg-gray-50 w-72 text-sm mt-4">
+      <h3 class="font-semibold text-gray-700 mb-1">Account Details:</h3>
+      <p>${accountNameEl.value}</p>
+      <p>Account Number: ${accountNumberEl.value}</p>
+    </div>
+
+    <div class="mt-8 text-center text-gray-500 text-xs">Thank you for your business!</div>
+  `;
+  
   invoiceEl.querySelector('.text-theme').style.color = themeColors[theme];
+  invoiceEl.querySelector('thead').style.backgroundColor = themeColors[theme];
+  invoiceEl.querySelector('thead').style.color = '#fff';
+}
+
+function calculateSubtotal(){ return items.reduce((sum,i)=>sum+(i.qty*i.rate||0),0); }
+function calculateTax(){ return calculateSubtotal() * (Number(document.getElementById('taxRate').value)||0)/100; }
+function calculateTotal(){ return calculateSubtotal() + calculateTax(); }
+
+addItemBtn.addEventListener('click', ()=>{ items.push({description:'', qty:0, rate:0}); renderTable(); });
+document.addEventListener('click', e=>{ if(e.target.dataset.action==='remove'){ items.splice(Number(e.target.dataset.index),1); renderTable(); } });
+
+document.addEventListener('input', e=>{
+  const t=e.target;
+  if(t.dataset.index && t.dataset.field){ items[Number(t.dataset.index)][t.dataset.field]=t.value; updateInvoice(); }
+  if(['companyInfo','clientInfo','accountName','accountNumber','invoiceNumber','taxRate'].includes(t.id)) updateInvoice();
 });
 
-// Download as PDF
+themeSelector.addEventListener('change', updateInvoice);
+
 downloadBtn.addEventListener('click', ()=>{
-  const opt = {
+  html2pdf().set({
     margin:0.2,
-    filename:`Invoice_${invoiceNumberEl.value || '000'}.pdf`,
-    image:{type:'jpeg',quality:0.98},
+    filename:`Invoice_${invoiceNumberEl.value||'000'}.pdf`,
+    image:{type:'jpeg', quality:1},
     html2canvas:{scale:2},
     jsPDF:{unit:'in', format:'letter', orientation:'portrait'}
-  };
-  html2pdf().set(opt).from(invoiceEl).save();
+  }).from(invoiceEl).save();
 });
 
-// Initial render
 renderTable();
 updateInvoice();
 themeSelector.dispatchEvent(new Event('change'));

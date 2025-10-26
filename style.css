@@ -1,13 +1,57 @@
-.text-theme { color: var(--theme-color); }
-.bg-theme { background-color: var(--theme-color); }
-.theme-table th, .theme-table td { border-bottom: 1px solid #e5e7eb; vertical-align: top; }
-.theme-table tbody tr:nth-child(even) { background-color: var(--theme-stripe); }
+/* Fonts and colors per theme */
+.theme-teal { font-family: 'Inter', sans-serif; color: #0d9488; }
+.theme-classic { font-family: 'Georgia', serif; color: #1e3a8a; }
+.theme-gray { font-family: 'Roboto', sans-serif; color: #374151; }
+.theme-purple { font-family: 'Poppins', sans-serif; color: #8b5cf6; }
+.theme-gold { font-family: 'Merriweather', serif; color: #d97706; }
+.theme-green { font-family: 'Nunito', sans-serif; color: #16a34a; }
 
-textarea, input { width: 100%; border: 1px solid #e5e7eb; border-radius: 4px; padding: 6px 8px; outline: none; font-size: 0.95rem; resize: none; }
-.account-box { font-size: 0.9rem; width: 20rem; }
-.fixed-account { position: relative; bottom: 0; left: 0; }
+/* Table header per theme */
+.theme-teal thead { background-color: #0d9488; color: #fff; }
+.theme-classic thead { background-color: #1e3a8a; color: #fff; }
+.theme-gray thead { background-color: #374151; color: #fff; }
+.theme-purple thead { background-color: #8b5cf6; color: #fff; }
+.theme-gold thead { background-color: #d97706; color: #fff; }
+.theme-green thead { background-color: #16a34a; color: #fff; }
 
-/* Themes */
-.theme-modern { --theme-color:#0d9488; --theme-stripe:#f0fdfa; --theme-font:'Arial'; background-color:#ffffff; }
-.theme-classic { --theme-color:#2563eb; --theme-stripe:#e0ebff; --theme-font:'Verdana'; background-color:#f0f4ff; }
-.theme-gray { --theme-color:#4b5563;
+/* Totals background per theme */
+.theme-teal .totals { background-color: #ccfbf1; }
+.theme-classic .totals { background-color: #dbeafe; }
+.theme-gray .totals { background-color: #e5e7eb; }
+.theme-purple .totals { background-color: #ede9fe; }
+.theme-gold .totals { background-color: #fff7ed; }
+.theme-green .totals { background-color: #dcfce7; }
+
+/* Header alignment fix */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  border-bottom: 3px solid;
+}
+.theme-teal .invoice-header { border-color: #0d9488; }
+.theme-classic .invoice-header { border-color: #1e3a8a; border-style: dashed; }
+.theme-gray .invoice-header { border-color: #374151; }
+.theme-purple .invoice-header { border-color: #8b5cf6; border-style: double; border-width: 4px; }
+.theme-gold .invoice-header { border-color: #d97706; border-style: dotted; }
+.theme-green .invoice-header { border-color: #16a34a; }
+
+.invoice-logo {
+  max-height: 90px;
+  max-width: 200px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 3px; /* reduced gap between logo and INVOICE */
+}
+
+.invoice-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: inherit;
+  text-align: left;
+  margin-top: 0; /* ensure tight spacing */
+  line-height: 1.2; /* visually balanced */
+}
+
+.text-theme { color: #0d9488; }
